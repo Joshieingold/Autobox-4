@@ -211,8 +211,6 @@ namespace Toolbox_Class_Library.CtrUpdate
                 {
                     Console.WriteLine($"\n{ThisCtr} automation is disabled.");
                 }
-                DatabaseConnection databaseConnection_CTR = new DatabaseConnection();
-                await databaseConnection_CTR.PushCTRData(ctr.Name, ctr.DeviceList);
             }
             else
             {

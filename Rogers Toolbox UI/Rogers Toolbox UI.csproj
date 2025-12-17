@@ -20,6 +20,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Keys\**" />
+    <EmbeddedResource Remove="Keys\**" />
+    <None Remove="Keys\**" />
+    <Page Remove="Keys\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Remove="Icons\BarcodeIcon.png" />
     <None Remove="Icons\BlitzIcon.png" />
     <None Remove="Icons\ComboPrint.png" />
@@ -37,10 +44,6 @@
     <None Remove="Icons\SettingsIcon.png" />
     <None Remove="Icons\TechIcon.png" />
     <None Remove="Icons\WMSIcon.png" />
-
-    <Content Include="Keys\bomwipstore-firebase-adminsdk-jhqev-acb5705838.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
   </ItemGroup>
 
   <ItemGroup>

@@ -200,7 +200,6 @@ namespace RogersToolbox
             string device = Serials[0].Device;
             DateTime i = DateTime.Now;
             DateTime utcDateTime = i.ToUniversalTime();
-            DatabaseConnection FlexiProConnection = new DatabaseConnection();
             foreach (SerialNumber copySerial in serialsToProcess)
             {
                 try
@@ -256,7 +255,6 @@ namespace RogersToolbox
                 }
                 catch
                 {
-                    await FlexiProConnection.PushDeviceData(device, shadowSerials.Count(), utcDateTime, user, shadowSerials);
                     System.Windows.MessageBox.Show("Error updating UI", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                     break;
                 }
@@ -264,13 +262,11 @@ namespace RogersToolbox
             if (pushFlexiProData)
             {
                 Console.WriteLine($"Date: {utcDateTime}\nDevice: {device}\nCount: {shadowSerials.Count()}\nUser: {user}");
-                await FlexiProConnection.PushDeviceData(device, shadowSerials.Count(), utcDateTime, user, shadowSerials);
             }
             else
             {
                 Console.WriteLine("Push FlexiPro Data is disabled, Data will be directed to serials Database.");
                 Console.WriteLine($"Date: {utcDateTime}\nDevice: {device}\nCount: {shadowSerials.Count()}\nUser: {user}");
-                await FlexiProConnection.PushSerialsData(device, shadowSerials.Count(), utcDateTime, user, shadowSerials);
             }
 
         }

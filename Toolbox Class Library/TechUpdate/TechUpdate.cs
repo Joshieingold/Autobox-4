@@ -75,8 +75,6 @@ namespace Toolbox_Class_Library.TechUpdate
                         sim.Keyboard.KeyPress(WindowsInput.Native.VirtualKeyCode.DOWN);
                     }
                 }
-                DatabaseConnection db_Tech = new DatabaseConnection();
-                await db_Tech.PushTechData(tech.Name, tech.Devices);
             }
         }
         public void UpdateTechs(string ExcelPath)

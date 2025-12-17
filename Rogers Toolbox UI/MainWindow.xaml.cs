@@ -14,18 +14,15 @@ namespace Rogers_Toolbox_UI
     public partial class MainWindow : Window
     {
         private ActiveSerials CurrentSerials; // Initialize our current serials class 
-        private DatabaseConnection dbConnection; // Handles connections between the service and the database
         public string StartupText { get; set; } = $"Welcome to Autobox 4.5 {Toolbox_Class_Library.Properties.Settings.Default.Username}";
         private bool IsOnline = true; // Keeps track of if the service is online
         private string lastSelectedPrinter = "Combo Print"; // Default printer
         private bool ctrUpdateEnabled = true; // Keeps track of if the CTR Update is enabled or if Tech Update is, default is CTR Update.
         private bool initialRun { get; set; }
-        private int orderCount = 0;
 
         public MainWindow()
         {
             InitializeComponent(); // Initialize Data
-            dbConnection = new DatabaseConnection(); // Creates fresh connection to database
             InitializeDataAsync(); // Call the async methods.
             LoadTheme(); // Changes the application theme on start-up
             DataContext = this;
@@ -39,18 +36,7 @@ namespace Rogers_Toolbox_UI
         private void CheckAndSetFirstRun()
         {
             string updateText =
-                "Autobox 4.5 Updates:\n" +
-                "- Added Combo-Print option \n" +
-                "- Purolator-Print is now more efficient \n" +
-                "- Removed Neon Theme (its ugly and will always be ugly) \n" +
-                "- Added Easily viewable totals in the stats page\n" +
-                "- Pasting into the import box will not add white space at the bottom\n" +
-                "- Added Dragon Theme (try it!)\n" +
-                "- Rebranded Software Name\n" +
-                "- Changed Software Icon\n" +
-                "- Added more Device recognition\n" +
-                "- Added new order import Feature/Functionality\n" +
-                "- Updated Settings for newest Devices\n";
+                "Autobox West Features:\n";
             if (Toolbox_Class_Library.Properties.Settings.Default.isFirstRun)
             {
                 TextBox.Text = updateText;
@@ -63,18 +49,7 @@ namespace Rogers_Toolbox_UI
             try
             {
                 CurrentSerials = new ActiveSerials(""); // Initialize CurrentSerials With an empty Parameter
-                IsOnline = await dbConnection.CheckIsOnline(); // Checks if the service is online and updates the application accordingly.
-                
-                if (!IsOnline)
-                {
-                    Console.WriteLine($"Rogers Toolbox is Offline. Sorry {Toolbox_Class_Library.Properties.Settings.Default.Username}..");
-                    this.Close();
-                }
-                else
-                {
-                    Console.WriteLine($"Rogers Toolbox is Online! Welcome {Toolbox_Class_Library.Properties.Settings.Default.Username}!");
-                    CheckAndSetFirstRun();
-                }
+                CheckAndSetFirstRun();
             }
             catch (Exception ex)
             {
@@ -156,81 +131,7 @@ namespace Rogers_Toolbox_UI
 
             return tempList;
         }
-        private void ShowPrintMenu(object sender, MouseButtonEventArgs e)
-        {
-            Button btn = sender as Button;
-            ContextMenu menu = new ContextMenu();
 
-            string[] printers = { "Combo Print", "Purolator", "Barcodes", "Lot Sheets", "Custom Purolator" };
-
-            foreach (string printer in printers)
-            {
-                MenuItem item = new MenuItem { Header = printer };
-                item.Click += (s, args) => SetPrinter(printer);
-                menu.Items.Add(item);
-            }
-
-            btn.ContextMenu = menu;
-            menu.IsOpen = true;
-        }// Open menu on right-click (or long-press for touchscreen)
-        private void ShowTechAndCtrMenu(object sender, MouseButtonEventArgs e)
-        {
-            Button btn = sender as Button;
-            ContextMenu menu = new ContextMenu();
-
-            string[] choices = { "CTR Update", "Tech Update" };
-
-            foreach (string choice in choices)
-            {
-                MenuItem item = new MenuItem { Header = choice };
-                item.Click += (s, args) =>
-                {
-                    if (choice == "CTR Update")
-                    {
-                        ctrUpdateEnabled = true;
-                        CTRButton.Tag = "pack://application:,,,/Icons/CTRIcon.png";
-                    }
-                    else if (choice == "Tech Update")
-                    {
-                        ctrUpdateEnabled = false;
-                        CTRButton.Tag = "pack://application:,,,/Icons/TechIcon.png";
-                    }
-                };
-                menu.Items.Add(item);
-            }
-
-            btn.ContextMenu = menu;
-            menu.IsOpen = true;
-        }
-
-        private void SetPrinter(string printer)
-        {
-            lastSelectedPrinter = printer;
-            if (printer == "Purolator")
-            {
-                PrintButton.Tag = "pack://application:,,,/Icons/PurolatorIcon.png";
-            }
-            else if (printer == "Combo Print")
-            {
-                PrintButton.Tag = "pack://application:,,,/Icons/ComboPrint.png";
-            }
-            else if (printer == "Barcodes")
-            {
-                PrintButton.Tag = "pack://application:,,,/Icons/BarcodeIcon.png";
-            }
-            else if (printer == "Lot Sheets")
-            {
-                PrintButton.Tag = "pack://application:,,,/Icons/LotSheetIcon.png";
-            }
-            else if (printer == "Custom Purolator")
-            {
-                PrintButton.Tag = "pack://application:,,,/Icons/PrintIcon.png";
-            }
-            else
-            {
-                PrintButton.Tag = "pack://application:,,,/Icons/PrinterIcon.png";
-            }
-        }// Set the new default printer
 
         // Main Functionality
         private async void Button_Click(object sender, RoutedEventArgs e) // Handles Actions based on Button Clicked
@@ -239,11 +140,6 @@ namespace Rogers_Toolbox_UI
 
             CurrentSerials = GetTextboxText(); // Get a fresh case of ActiveSerials from the textbox.
             // Checking if the service is still online.
-            IsOnline = await dbConnection.CheckIsOnline();
-            if (!IsOnline)
-            {
-                this.Close();
-            }
                 // Finds Button that was clicked and preforms the appropriate action.
                 switch (button.Name)
                 {
@@ -286,12 +182,6 @@ namespace Rogers_Toolbox_UI
                         UpdateMessage($"Import Completed in {FlexieElapsedTime}");
 
                         break; // Done !!
-                    case "OrderButton":
-                        orderCount += 1;
-                        UpdateMessage($"Opening order #{orderCount}");
-                        OrderWindow orderWindow = new OrderWindow(TextBox.Text, orderCount);
-                        orderWindow.Show();
-                        break;
                     case "WMSButton":
                         Stopwatch wmsStopwatch = new Stopwatch();
                         UpdateMessage("Starting WMS Import, Please click target Location");
@@ -417,9 +307,6 @@ namespace Rogers_Toolbox_UI
                             break;
                         case "GraphButton":
                             // Opens the Stats Window
-                            DatabaseConnection databaseConnection = new DatabaseConnection();
-                            StatsWindow statsWindow = new StatsWindow();
-                            statsWindow.Show();
                             break;
                         case "CompareListButton":
                             CompareLists compareLists = new CompareLists();
