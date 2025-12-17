@@ -157,6 +157,7 @@ namespace RogersToolbox
             if (failSplit[1] == "X")
             {
                 sim.Keyboard.ModifiedKeyStroke(WindowsInput.Native.VirtualKeyCode.CONTROL, WindowsInput.Native.VirtualKeyCode.VK_X);
+
             }
             else if (failSplit[1] == "A")
             {
