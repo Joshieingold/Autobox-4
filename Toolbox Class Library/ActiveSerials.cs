@@ -96,7 +96,7 @@ namespace RogersToolbox
             string[] cords = pixelSource.Split(", ");
             int xCord = Convert.ToInt32(cords[0]);
             int yCord = Convert.ToInt32(cords[1]);
-            System.Drawing.Point ixelCords = new System.Drawing.Point(xCord, yCord);
+            System.Drawing.Point pixelCords = new System.Drawing.Point(xCord, yCord);
 
             // Capture the screen
             Bitmap screenshot = new Bitmap(Screen.PrimaryScreen.Bounds.Width, Screen.PrimaryScreen.Bounds.Height);

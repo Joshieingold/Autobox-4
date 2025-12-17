@@ -36,7 +36,8 @@ namespace Rogers_Toolbox_UI
         private void CheckAndSetFirstRun()
         {
             string updateText =
-                "Autobox West Features:\n";
+                "Autobox West Features:\n"+
+                "Shows only options important for west users";
             if (Toolbox_Class_Library.Properties.Settings.Default.isFirstRun)
             {
                 TextBox.Text = updateText;
