@@ -24,7 +24,6 @@ namespace Rogers_Toolbox_UI
             LoadContractorData();
             InitializeThemeComboBox();
             InitializeWmsFailSettingComboBox();
-            LoadTechDevices();
             LoadTechIds();
         }
         private void LoadTechIds()
@@ -34,69 +33,17 @@ namespace Rogers_Toolbox_UI
                 ? new List<string>()
                 : raw.Split(new[] { ", " }, StringSplitOptions.RemoveEmptyEntries).ToList();
 
-            TechIDsListBox.ItemsSource = techIds;
         }
         private void SaveTechIds()
         {
             Settings.Default.TechIds = string.Join(", ", techIds);
             Settings.Default.Save();
         }
-        private void AddTechID_Click(object sender, RoutedEventArgs e)
-        {
-            string newId = TechIDTextBox.Text.Trim();
-            if (!string.IsNullOrEmpty(newId) && !techIds.Contains(newId))
-            {
-                techIds.Add(newId);
-                TechIDsListBox.ItemsSource = null;
-                TechIDsListBox.ItemsSource = techIds;
-                SaveTechIds();
-            }
-        }
-        private void RemoveTechID_Click(object sender, RoutedEventArgs e)
-        {
-            if (TechIDsListBox.SelectedItem is string selectedId)
-            {
-                techIds.Remove(selectedId);
-                TechIDsListBox.ItemsSource = null;
-                TechIDsListBox.ItemsSource = techIds;
-                SaveTechIds();
-            }
-        }
 
-        private void LoadTechDevices()
-        {
-            string raw = Settings.Default.TechDevices;
-            techDevices = string.IsNullOrWhiteSpace(raw)
-                ? new List<string>()
-                : raw.Split(new[] { ", " }, StringSplitOptions.RemoveEmptyEntries).ToList();
-
-            TechDevicesListBox.ItemsSource = techDevices;
-        }
         private void SaveTechDevices()
         {
             Settings.Default.TechDevices = string.Join(", ", techDevices);
             Settings.Default.Save();
-        }
-        private void AddTechDevice_Click(object sender, RoutedEventArgs e)
-        {
-            string newDevice = TechDeviceNameTextBox.Text.Trim();
-            if (!string.IsNullOrEmpty(newDevice) && !techDevices.Contains(newDevice))
-            {
-                techDevices.Add(newDevice);
-                TechDevicesListBox.ItemsSource = null;
-                TechDevicesListBox.ItemsSource = techDevices;
-                SaveTechDevices();
-            }
-        }
-        private void RemoveTechDevice_Click(object sender, RoutedEventArgs e)
-        {
-            if (TechDevicesListBox.SelectedItem is string selectedDevice)
-            {
-                techDevices.Remove(selectedDevice);
-                TechDevicesListBox.ItemsSource = null;
-                TechDevicesListBox.ItemsSource = techDevices;
-                SaveTechDevices();
-            }
         }
 
         private void InitializeThemeComboBox()
@@ -156,7 +103,6 @@ namespace Rogers_Toolbox_UI
 
             contractorCategories = JsonSerializer.Deserialize<List<ContractorCategory>>(jsonData) ?? new List<ContractorCategory>();
 
-            ContractorCategoryComboBox.ItemsSource = contractorCategories;
             return contractorCategories;
         }
 
@@ -167,106 +113,10 @@ namespace Rogers_Toolbox_UI
             Settings.Default.Save();
         }
 
-        private void AddCategory_Click(object sender, RoutedEventArgs e)
-        {
-            string categoryName = NewCategoryTextBox.Text.Trim();
-            if (string.IsNullOrEmpty(categoryName) || contractorCategories.Any(c => c.Name == categoryName)) return;
 
-            var newCategory = new ContractorCategory { Name = categoryName };
-            contractorCategories.Add(newCategory);
-            ContractorCategoryComboBox.Items.Refresh();
-            SaveContractorData(contractorCategories);
-        }
 
-        private void ContractorCategoryComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            if (ContractorCategoryComboBox.SelectedItem is ContractorCategory selectedCategory)
-            {
-                DevicesListBox.ItemsSource = selectedCategory.Devices;
-                CtrIDListBox.ItemsSource = selectedCategory.CtrIDs;
-            }
-        }
 
-        private void AddDevice_Click(object sender, RoutedEventArgs e)
-        {
-            if (ContractorCategoryComboBox.SelectedItem is ContractorCategory selectedCategory)
-            {
-                string deviceName = DeviceNameTextBox.Text.Trim();
-                if (!string.IsNullOrEmpty(deviceName) && !selectedCategory.Devices.Contains(deviceName))
-                {
-                    selectedCategory.Devices.Add(deviceName);
-                    DevicesListBox.Items.Refresh();
-                    SaveContractorData(contractorCategories);
-                }
-            }
-        }
-        private void TechRemoveDevice_Click(object sender, RoutedEventArgs e)
-        {
 
-        }
-
-        private void AddCtrID_Click(object sender, RoutedEventArgs e)
-        {
-            if (ContractorCategoryComboBox.SelectedItem is ContractorCategory selectedCategory)
-            {
-                string ctrID = CtrIDTextBox.Text.Trim();  // Get CTR ID as a string
-
-                if (!string.IsNullOrEmpty(ctrID) && !selectedCategory.CtrIDs.Contains(ctrID))  // Check if it's not empty and not in the list
-                {
-                    selectedCategory.CtrIDs.Add(ctrID);  // Add as a string
-
-                    // Force UI to update
-                    CtrIDListBox.ItemsSource = null;
-                    CtrIDListBox.ItemsSource = selectedCategory.CtrIDs;
-
-                    SaveContractorData(contractorCategories);
-                }
-            }
-        }
-
-        private void DeleteCategory_Click(object sender, RoutedEventArgs e)
-        {
-            if (ContractorCategoryComboBox.SelectedItem is ContractorCategory selectedCategory)
-            {
-                contractorCategories.Remove(selectedCategory);
-                SaveContractorData(contractorCategories);
-
-                // Refresh UI
-                ContractorCategoryComboBox.ItemsSource = null;
-                ContractorCategoryComboBox.ItemsSource = contractorCategories;
-                DevicesListBox.ItemsSource = null;
-                CtrIDListBox.ItemsSource = null;
-            }
-        }
-
-        private void RemoveDevice_Click(object sender, RoutedEventArgs e)
-        {
-            if (ContractorCategoryComboBox.SelectedItem is ContractorCategory selectedCategory &&
-                DevicesListBox.SelectedItem is string selectedDevice)
-            {
-                selectedCategory.Devices.Remove(selectedDevice);
-                DevicesListBox.ItemsSource = null;
-                DevicesListBox.ItemsSource = selectedCategory.Devices;
-                SaveContractorData(contractorCategories);
-            }
-        }
-
-        private void RemoveCtrID_Click(object sender, RoutedEventArgs e)
-        {
-            if (ContractorCategoryComboBox.SelectedItem is ContractorCategory selectedCategory &&
-                CtrIDListBox.SelectedItem is string selectedCtrID)  // Ensure it's a string
-            {
-                selectedCategory.CtrIDs.Remove(selectedCtrID);  // Remove string from the list
-                CtrIDListBox.ItemsSource = null;
-                CtrIDListBox.ItemsSource = selectedCategory.CtrIDs;  // Update UI
-                SaveContractorData(contractorCategories);  // Save changes
-            }
-        }
-
-        private void Button_Click(object sender, RoutedEventArgs e)
-        {
-
-        }
     }
 
     public class ContractorCategory
